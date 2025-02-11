@@ -37,9 +37,9 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Run tests
+      - name: Build and test
         run: ./gradlew build # also runs tests
 
       # Upload the shadowJAR file as an artifact (it contains everything needed to run the app)
@@ -48,3 +48,38 @@ jobs:
         with:
           name: micronaut-crud-jar
           path: build/libs/micronaut-crud-*-all.jar
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build_and_test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: micronaut-crud-jar
+          path: build/libs
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: Release ${{ github.run_number }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/libs/micronaut-crud-*-all.jar
+          asset_name: micronaut-crud-${{ github.run_number }}.jar
+          asset_content_type: application/java-archive
