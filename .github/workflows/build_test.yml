@@ -46,6 +46,10 @@ jobs:
         id: set_jar_path
         run: echo "JAR_PATH=$(ls build/libs/micronaut-crud-*-all.jar)" >> $GITHUB_ENV
 
+      - name: Save JAR path as output
+        id: save_jar_output
+        run: echo "::set-output name=JAR_PATH::$(ls build/libs/micronaut-crud-*-all.jar)"
+
       # Upload the shadowJAR file as an artifact (it contains everything needed to run the app)
       - name: Upload JAR file
         uses: actions/upload-artifact@v4
@@ -82,7 +86,7 @@ jobs:
         run: ls -l build/libs
 
       - name: Echo JAR path
-        run: echo ${{ env.JAR_PATH }}
+        run: echo ${{ steps.save_jar_output.outputs.JAR_PATH }}
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
@@ -90,6 +94,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.JAR_PATH }}
+          asset_path: ${{ steps.save_jar_output.outputs.JAR_PATH }}
           asset_name: micronaut-crud-v${{ github.run_number }}.jar
           asset_content_type: application/java-archive
