@@ -1,0 +1,12 @@
+services:
+  mysql:
+    image: mysql:8.1
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: mn_playground
+    volumes:
+      - mysql-data:/var/lib/mysql
+volumes:
+  mysql-data:
