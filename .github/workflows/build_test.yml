@@ -36,6 +36,9 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
+      - name: Check out code
+        uses: actions/checkout@v3
+
       - name: Run tests
         run: ./gradlew build # also runs tests
 
