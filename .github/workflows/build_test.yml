@@ -62,6 +62,14 @@ jobs:
           name: micronaut-crud-jar
           path: build/libs
 
+      - name: List downloaded artifacts
+        run: ls -l build/libs
+
+      - name: Set JAR file path
+        id: set_jar_path
+        run: echo "JAR_PATH=$(ls build/libs/micronaut-crud-*-all.jar)" >> $GITHUB_ENV
+        shell: bash
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -73,15 +81,12 @@ jobs:
           draft: ${{ github.ref != 'refs/heads/main' }}
           prerelease: false
 
-      - name: List downloaded artifacts
-        run: ls -l build/libs
-
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/libs
-          asset_name: $(basename $FILE_PATH)
+          asset_path: ${{ env.JAR_PATH }}
+          asset_name: micronaut-crud-${{ github.run_number }}.jar
           asset_content_type: application/java-archive
