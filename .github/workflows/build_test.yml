@@ -81,6 +81,9 @@ jobs:
       - name: List downloaded artifacts
         run: ls -l build/libs
 
+      - name: Echo JAR path
+        run: echo ${{ env.JAR_PATH }}
+
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
