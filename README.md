@@ -201,3 +201,11 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 }
 
 ```
+
+
+### Running GitHub actions
+
+1. Building the project into a jar file
+2. Running the tests
+
+For the tests to work, there needs to be a database running!
